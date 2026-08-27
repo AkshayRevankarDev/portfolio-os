@@ -1,0 +1,677 @@
+<title>Akshay Revankar</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#050510;--surface:#0c0c1e;--chrome:#12121f;
+  --border:rgba(110,90,255,0.18);
+  --accent:#7c6af5;--accent2:#00c8ff;
+  --text:#e2e0ff;--muted:#6b6890;
+  --red:#ff5f57;--yellow:#ffbd2e;--green:#28c840;
+}
+
+body{background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;
+  overflow:hidden;height:100vh;width:100vw;user-select:none}
+
+/* ── INTRO ── */
+#intro{position:fixed;inset:0;background:#000;
+  display:flex;align-items:center;justify-content:center;
+  z-index:1000;transition:opacity .9s ease}
+#intro.out{opacity:0;pointer-events:none}
+
+#hello-svg{width:min(600px,80vw);height:auto}
+
+#hello-path{
+  stroke-dasharray:5800;
+  stroke-dashoffset:5800;
+  animation:draw-hello 4.5s linear forwards .3s}
+@keyframes draw-hello{to{stroke-dashoffset:0}}
+
+/* ── DESKTOP ── */
+#desktop{position:fixed;inset:0;opacity:0;transition:opacity .9s ease}
+#desktop.vis{opacity:1}
+
+#bg-canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* ── MENU BAR ── */
+#menubar{
+  position:fixed;top:0;left:0;right:0;height:28px;
+  background:rgba(4,4,18,.85);backdrop-filter:blur(20px);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;z-index:500;
+  border-bottom:1px solid var(--border);font-size:13px}
+.ml{display:flex;align-items:center;gap:16px}
+.ml .logo{font-size:16px;letter-spacing:-.5px}
+#app-name{font-weight:700}
+.mi{opacity:.75;cursor:default}
+.mr{font-size:12px;font-variant-numeric:tabular-nums}
+
+/* ── DESKTOP ICONS ── */
+#icons{position:absolute;top:44px;left:20px;
+  display:grid;grid-template-columns:repeat(2,80px);gap:6px 12px}
+.di{display:flex;flex-direction:column;align-items:center;gap:5px;
+  cursor:pointer;padding:8px;border-radius:10px;width:80px;
+  transition:background .15s}
+.di:hover{background:rgba(124,106,245,.18)}
+.di:active{background:rgba(124,106,245,.28)}
+.ig{width:52px;height:52px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.di>span{font-size:11px;text-align:center;color:#fff;
+  text-shadow:0 1px 4px rgba(0,0,0,.9);line-height:1.3}
+
+/* ── WIDGETS ── */
+#widgets{position:absolute;top:44px;right:16px;
+  display:flex;flex-direction:column;gap:10px;width:196px}
+.wg{background:rgba(10,10,28,.72);backdrop-filter:blur(18px);
+  border:1px solid var(--border);border-radius:16px;padding:14px}
+.clk-time{font-size:38px;font-weight:200;color:#fff;
+  letter-spacing:-1px;font-variant-numeric:tabular-nums;text-align:center}
+.clk-date{font-size:11px;color:var(--muted);text-align:center;margin-top:2px}
+.mw{display:flex;align-items:center;gap:10px}
+.mart{width:42px;height:42px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;font-size:20px}
+.minfo{flex:1;min-width:0}
+.mtitle{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.martist{font-size:11px;color:var(--muted)}
+.mctrl{display:flex;gap:8px;margin-top:5px}
+.mctrl button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0}
+.mctrl button:hover{color:var(--text)}
+
+/* ── DOCK ── */
+#dock{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:flex-end;gap:6px;
+  background:rgba(10,10,28,.65);backdrop-filter:blur(24px);
+  border:1px solid var(--border);border-radius:20px;
+  padding:10px 16px;z-index:400}
+.dki{display:flex;flex-direction:column;align-items:center;
+  cursor:pointer;transition:transform .15s;position:relative}
+.dki:hover{transform:translateY(-10px) scale(1.18)}
+.dkimg{width:48px;height:48px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:28px}
+.dkdot{width:4px;height:4px;border-radius:50%;
+  background:rgba(255,255,255,.45);margin-top:3px;
+  opacity:0;transition:opacity .2s}
+.dki.open .dkdot{opacity:1}
+.dsep{width:1px;height:46px;background:var(--border);margin:0 4px}
+
+/* ── WINDOWS ── */
+.win{position:fixed;display:none;width:560px;
+  background:rgba(10,12,26,.93);backdrop-filter:blur(28px);
+  border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 28px 70px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.04);
+  z-index:100}
+.win.open{display:block;animation:wopen .2s ease}
+@keyframes wopen{from{opacity:0;transform:scale(.95) translateY(8px)}}
+
+.wbar{height:40px;background:rgba(14,14,28,.92);
+  display:flex;align-items:center;padding:0 12px;
+  cursor:grab;border-bottom:1px solid var(--border);
+  position:relative;gap:8px}
+.wbar:active{cursor:grabbing}
+.tls{display:flex;gap:6px}
+.tl{width:12px;height:12px;border-radius:50%;cursor:pointer;flex-shrink:0}
+.tl.r{background:var(--red)}.tl.y{background:var(--yellow)}.tl.g{background:var(--green)}
+.tl:hover{filter:brightness(1.2)}
+.wtitle{position:absolute;left:50%;transform:translateX(-50%);
+  font-size:13px;font-weight:600;pointer-events:none}
+
+.wbody{max-height:68vh;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.wbody::-webkit-scrollbar{width:5px}
+.wbody::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+
+/* ── ABOUT ── */
+.ahdr{height:110px;background:linear-gradient(135deg,#2b1870 0%,#162460 55%,#0c1e45 100%);
+  position:relative;overflow:hidden}
+.ahdr::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 25% 60%,rgba(124,106,245,.45),transparent 70%)}
+.aav{position:absolute;bottom:-22px;left:20px;
+  width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:700;color:#fff;
+  border:3px solid rgba(10,12,26,.9);z-index:2}
+.ainf{padding:30px 20px 16px}
+.aname{font-size:19px;font-weight:700;color:#fff}
+.atitle{font-size:12px;color:var(--muted);margin-top:2px}
+.ameta{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap}
+.ameta span{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px}
+.asocial{display:flex;gap:7px;margin-top:10px}
+.sbtn{padding:5px 11px;border-radius:6px;
+  background:rgba(124,106,245,.14);border:1px solid rgba(124,106,245,.3);
+  color:var(--accent);font-size:12px;cursor:pointer;
+  text-decoration:none;display:inline-flex;align-items:center;gap:4px;
+  transition:background .15s}
+.sbtn:hover{background:rgba(124,106,245,.26)}
+.asec{padding:14px 20px;border-top:1px solid var(--border);user-select:text}
+.slabel{font-size:10px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.09em;color:var(--muted);margin-bottom:7px}
+.abio{font-size:13px;line-height:1.7;color:var(--text);opacity:.85}
+
+/* ── PROJECTS ── */
+.plist{padding:14px;display:flex;flex-direction:column;gap:10px}
+.pcard{background:rgba(255,255,255,.025);border:1px solid var(--border);
+  border-radius:10px;padding:13px 15px;transition:border-color .15s,background .15s}
+.pcard:hover{border-color:rgba(124,106,245,.38);background:rgba(124,106,245,.04)}
+.phdr{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.picon{width:30px;height:30px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.pname{font-size:14px;font-weight:700;color:#fff;letter-spacing:.02em}
+.ptag{font-size:10px;padding:2px 8px;border-radius:20px;margin-left:auto}
+.pdesc{font-size:12px;line-height:1.65;color:var(--muted)}
+.ptech{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.tc{font-size:10px;padding:2px 8px;border-radius:4px;
+  background:rgba(124,106,245,.1);border:1px solid rgba(124,106,245,.22);
+  color:var(--accent)}
+
+/* ── SKILLS ── */
+.sbody{padding:16px}
+.sgroup{margin-bottom:14px}
+.sgl{font-size:10px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.09em;color:var(--muted);margin-bottom:7px}
+.schips{display:flex;flex-wrap:wrap;gap:6px}
+.sc{font-size:12px;padding:4px 11px;border-radius:6px;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text)}
+
+/* ── EXPERIENCE ── */
+.ebody{padding:16px}
+.eitem{display:flex;gap:12px;margin-bottom:18px;position:relative}
+.eitem::before{content:'';position:absolute;left:18px;top:38px;
+  bottom:-18px;width:1px;background:var(--border)}
+.eitem:last-child::before{display:none}
+.edot{width:38px;height:38px;border-radius:9px;
+  background:rgba(124,106,245,.12);border:1px solid rgba(124,106,245,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;flex-shrink:0}
+.erole{font-size:14px;font-weight:600;color:#fff}
+.eco{font-size:12px;color:var(--accent)}
+.eperiod{font-size:11px;color:var(--muted);margin-top:1px}
+.edesc{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.6}
+
+/* ── CONTACT ── */
+.cbody{padding:20px;display:flex;flex-direction:column;gap:10px}
+.crow{display:flex;align-items:center;gap:12px;
+  padding:12px 15px;background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:10px;cursor:pointer;
+  transition:border-color .15s;text-decoration:none;color:var(--text)}
+.crow:hover{border-color:rgba(124,106,245,.35)}
+.cico{font-size:22px;width:32px;text-align:center}
+.clbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.cval{font-size:13px;color:#fff;margin-top:1px;user-select:text}
+
+/* ── TERMINAL ── */
+.tbody{background:#070708;padding:16px;
+  font-family:'SF Mono','Fira Code','Cascadia Code',monospace;
+  font-size:12.5px;line-height:1.6;min-height:280px}
+.tl2{margin-bottom:4px}
+.tp{color:var(--accent)}
+.tc2{color:#fff}
+.to{color:#00e676}
+.td2{color:#444}
+.tcursor{display:inline-block;width:8px;height:14px;
+  background:var(--accent);animation:blink 1s step-end infinite;vertical-align:text-bottom}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── RESUME ── */
+.rbody{padding:24px;text-align:center}
+.rprev{background:rgba(255,255,255,.03);border:1px solid var(--border);
+  border-radius:10px;padding:36px 20px;margin-bottom:16px}
+.rprev .rico{font-size:44px;margin-bottom:10px}
+.rprev p{font-size:13px;color:var(--muted);line-height:1.6}
+.rbtn{display:inline-block;padding:9px 22px;
+  background:var(--accent);color:#fff;border-radius:8px;
+  font-size:13px;font-weight:500;cursor:pointer;
+  border:none;text-decoration:none;transition:filter .15s}
+.rbtn:hover{filter:brightness(1.1)}
+</style>
+
+<!-- ── INTRO ── -->
+<div id="intro">
+  <svg id="hello-svg" viewBox="0 0 1230.94 414.57" xmlns="http://www.w3.org/2000/svg">
+    <path id="hello-path"
+      transform="translate(311.08 476.02)"
+      d="M-293.58-104.62S-103.61-205.49-60-366.25c9.13-32.45,9-58.31,0-74-10.72-18.82-49.69-33.21-75.55,31.94-27.82,70.11-52.22,377.24-44.11,322.48s34-176.24,99.89-183.19c37.66-4,49.55,23.58,52.83,47.92a117.06,117.06,0,0,1-3,45.32c-7.17,27.28-20.47,97.67,33.51,96.86,66.93-1,131.91-53.89,159.55-84.49,31.1-36.17,31.1-70.64,19.27-90.25-16.74-29.92-69.47-33-92.79,16.73C62.78-179.86,98.7-93.8,159-81.63S302.7-99.55,393.3-269.92c29.86-58.16,52.85-114.71,46.14-150.08-7.44-39.21-59.74-54.5-92.87-8.7-47,65-61.78,266.62-34.74,308.53S416.62-58,481.52-130.31s133.2-188.56,146.54-256.23c14-71.15-56.94-94.64-88.4-47.32C500.53-375,467.58-229.49,503.3-127a73.73,73.73,0,0,0,23.43,33.67c25.49,20.23,55.1,16,77.46,6.32a111.25,111.25,0,0,0,30.44-19.87c37.73-34.23,29-36.71,64.58-127.53C724-284.3,785-298.63,821-259.13a71,71,0,0,1,13.69,22.56c17.68,46,6.81,80-6.81,107.89-12,24.62-34.56,42.72-61.45,47.91-23.06,4.45-48.37-.35-66.48-24.27a78.88,78.88,0,0,1-12.66-25.8c-14.75-51,4.14-88.76,11-101.41,6.18-11.39,37.26-69.61,103.42-42.24,55.71,23.05,100.66-23.31,100.66-23.31"
+      fill="none" stroke="#ffffff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="35"
+    />
+  </svg>
+</div>
+
+<!-- ── DESKTOP ── -->
+<div id="desktop">
+  <canvas id="bg-canvas"></canvas>
+
+  <div id="menubar">
+    <div class="ml">
+      <span class="logo">⬡</span>
+      <span id="app-name">Finder</span>
+      <span class="mi">File</span>
+      <span class="mi">Edit</span>
+      <span class="mi">View</span>
+      <span class="mi">Go</span>
+      <span class="mi">Window</span>
+      <span class="mi">Help</span>
+    </div>
+    <div class="mr" id="menu-clock">12:00 AM</div>
+  </div>
+
+  <div id="icons">
+    <div class="di" onclick="openW('about','About Me')">
+      <div class="ig" style="background:linear-gradient(135deg,#6d5aff,#9b5de5)">👤</div>
+      <span>About Me</span>
+    </div>
+    <div class="di" onclick="openW('projects','Projects')">
+      <div class="ig" style="background:linear-gradient(135deg,#0077b6,#00b4d8)">🛸</div>
+      <span>Projects</span>
+    </div>
+    <div class="di" onclick="openW('exp','Experience')">
+      <div class="ig" style="background:linear-gradient(135deg,#2d6a4f,#52b788)">💼</div>
+      <span>Experience</span>
+    </div>
+    <div class="di" onclick="openW('skills','Skills')">
+      <div class="ig" style="background:linear-gradient(135deg,#e63946,#f77f00)">⚡</div>
+      <span>Skills</span>
+    </div>
+    <div class="di" onclick="openW('resume','Resume')">
+      <div class="ig" style="background:linear-gradient(135deg,#4a4e69,#9a8c98)">📄</div>
+      <span>Resume</span>
+    </div>
+    <div class="di" onclick="openW('contact','Contact')">
+      <div class="ig" style="background:linear-gradient(135deg,#06d6a0,#118ab2)">✉️</div>
+      <span>Contact</span>
+    </div>
+    <div class="di" onclick="openW('terminal','Terminal')">
+      <div class="ig" style="background:linear-gradient(135deg,#0a0a14,#161630);font-family:monospace;font-size:22px;color:#00e676">❯_</div>
+      <span>Terminal</span>
+    </div>
+    <div class="di" onclick="openW('about','About Me')">
+      <div class="ig" style="background:linear-gradient(135deg,#24292f,#57606a)">🐙</div>
+      <span>GitHub</span>
+    </div>
+  </div>
+
+  <div id="widgets">
+    <div class="wg">
+      <div class="clk-time" id="w-clock">12:00</div>
+      <div class="clk-date" id="w-date">Thu, Aug 27</div>
+    </div>
+    <div class="wg mw">
+      <div class="mart">🚀</div>
+      <div class="minfo">
+        <div class="mtitle">Interstellar Suite</div>
+        <div class="martist">Hans Zimmer</div>
+        <div class="mctrl">
+          <button>⏮</button><button>⏸</button><button>⏭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dock">
+    <div class="dki open" onclick="openW('about','About Me')" id="dk-about">
+      <div class="dkimg" style="background:linear-gradient(135deg,#6d5aff,#9b5de5)">👤</div>
+      <div class="dkdot"></div>
+    </div>
+    <div class="dki" onclick="openW('projects','Projects')" id="dk-projects">
+      <div class="dkimg" style="background:linear-gradient(135deg,#0077b6,#00b4d8)">🛸</div>
+      <div class="dkdot"></div>
+    </div>
+    <div class="dki" onclick="openW('terminal','Terminal')" id="dk-terminal">
+      <div class="dkimg" style="background:linear-gradient(135deg,#0a0a14,#161630);font-family:monospace;font-size:22px;color:#00e676">❯</div>
+      <div class="dkdot"></div>
+    </div>
+    <div class="dsep"></div>
+    <div class="dki" onclick="openW('contact','Contact')" id="dk-contact">
+      <div class="dkimg" style="background:linear-gradient(135deg,#06d6a0,#118ab2)">✉️</div>
+      <div class="dkdot"></div>
+    </div>
+  </div>
+
+  <!-- ── WINDOWS ── -->
+
+  <div class="win" id="win-about" style="left:180px;top:55px">
+    <div class="wbar" data-win="about">
+      <div class="tls">
+        <div class="tl r" onclick="closeW('about')"></div>
+        <div class="tl y"></div><div class="tl g"></div>
+      </div>
+      <div class="wtitle">About Me</div>
+    </div>
+    <div class="wbody">
+      <div class="ahdr"><div class="aav">AR</div></div>
+      <div class="ainf">
+        <div class="aname">Akshay Mohan Revankar</div>
+        <div class="atitle">AI Engineer · Spacecraft Systems · Full Stack</div>
+        <div class="ameta">
+          <span>📍 India</span>
+          <span>🟢 Open to work</span>
+          <span>🚀 Building AI</span>
+        </div>
+        <div class="asocial">
+          <a class="sbtn" href="mailto:akshayrevankar60@gmail.com">✉ Email</a>
+          <a class="sbtn" href="https://github.com" target="_blank">🐙 GitHub</a>
+          <a class="sbtn" href="https://linkedin.com" target="_blank">💼 LinkedIn</a>
+        </div>
+      </div>
+      <div class="asec">
+        <div class="slabel">About Me</div>
+        <div class="abio">Building intelligent systems at the intersection of AI and space technology. I design autonomous spacecraft modules — from real-time threat detection to orbital science pipelines — and bring the same engineering rigour to product and web work. Passionate about systems that operate where human oversight is impossible.</div>
+      </div>
+      <div class="asec">
+        <div class="slabel">Currently Building</div>
+        <div class="abio">Working on the August AI Builders Challenge — a modular spacecraft AI platform: AEGIS (threat detection), ORBITTRACE (orbital tracking), SCIENCEPACK (science pipelines), and DARKSIDE (lunar dark-side navigation).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="win" id="win-projects" style="left:240px;top:72px">
+    <div class="wbar" data-win="projects">
+      <div class="tls">
+        <div class="tl r" onclick="closeW('projects')"></div>
+        <div class="tl y"></div><div class="tl g"></div>
+      </div>
+      <div class="wtitle">Projects</div>
+    </div>
+    <div class="wbody">
+      <div class="plist">
+        <div class="pcard">
+          <div class="phdr">
+            <div class="picon" style="background:rgba(255,80,80,.15)">🛡️</div>
+            <div class="pname">AEGIS</div>
+            <span class="ptag" style="background:rgba(255,80,80,.1);color:#ff6b6b;border:1px solid rgba(255,80,80,.2)">AI · Defense</span>
+          </div>
+          <div class="pdesc">Autonomous threat detection and anomaly response for spacecraft telemetry. ML models identify threats in real-time sensor streams with millisecond latency.</div>
+          <div class="ptech"><span class="tc">Python</span><span class="tc">PyTorch</span><span class="tc">Real-time ML</span></div>
+        </div>
+        <div class="pcard">
+          <div class="phdr">
+            <div class="picon" style="background:rgba(0,180,255,.15)">🛰️</div>
+            <div class="pname">ORBITTRACE</div>
+            <span class="ptag" style="background:rgba(0,180,255,.1);color:#00b4d8;border:1px solid rgba(0,180,255,.2)">Orbital Mechanics</span>
+          </div>
+          <div class="pdesc">Real-time orbital tracking for multi-satellite constellations with predictive collision avoidance and trajectory optimization.</div>
+          <div class="ptech"><span class="tc">Python</span><span class="tc">Astrodynamics</span><span class="tc">React</span></div>
+        </div>
+        <div class="pcard">
+          <div class="phdr">
+            <div class="picon" style="background:rgba(0,210,120,.15)">🔬</div>
+            <div class="pname">SCIENCEPACK</div>
+            <span class="ptag" style="background:rgba(0,210,120,.1);color:#06d6a0;border:1px solid rgba(0,210,120,.2)">Data Pipeline</span>
+          </div>
+          <div class="pdesc">Automated science data analysis pipeline ingesting instrument readings and generating mission insights with LLM-powered summarization.</div>
+          <div class="ptech"><span class="tc">LangChain</span><span class="tc">FastAPI</span><span class="tc">PostgreSQL</span></div>
+        </div>
+        <div class="pcard">
+          <div class="phdr">
+            <div class="picon" style="background:rgba(150,100,255,.15)">🌑</div>
+            <div class="pname">DARKSIDE</div>
+            <span class="ptag" style="background:rgba(150,100,255,.1);color:#9b5de5;border:1px solid rgba(150,100,255,.2)">Navigation</span>
+          </div>
+          <div class="pdesc">Autonomous navigation and communication relay module for lunar dark-side missions, operating without direct Earth line-of-sight.</div>
+          <div class="ptech"><span class="tc">C++</span><span class="tc">ROS</span><span class="tc">SLAM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="win" id="win-exp" style="left:210px;top:64px">
+    <div class="wbar" data-win="exp">
+      <div class="tls">
+        <div class="tl r" onclick="closeW('exp')"></div>
+        <div class="tl y"></div><div class="tl g"></div>
+      </div>
+      <div class="wtitle">Experience</div>
+    </div>
+    <div class="wbody">
+      <div class="ebody">
+        <div class="eitem">
+          <div class="edot">🚀</div>
+          <div>
+            <div class="erole">AI Systems Engineer</div>
+            <div class="eco">August AI Builders Challenge</div>
+            <div class="eperiod">2026 · Present</div>
+            <div class="edesc">Designing a modular spacecraft AI platform across four subsystems: threat detection, orbital tracking, science pipelines, and dark-side navigation.</div>
+          </div>
+        </div>
+        <div class="eitem">
+          <div class="edot">💻</div>
+          <div>
+            <div class="erole">Full Stack Developer</div>
+            <div class="eco">Independent Projects</div>
+            <div class="eperiod">2024 · Present</div>
+            <div class="edesc">Building AI-powered web applications with a focus on real-time data, clean architecture, and strong developer experience.</div>
+          </div>
+        </div>
+        <div class="eitem">
+          <div class="edot">🎓</div>
+          <div>
+            <div class="erole">Computer Science</div>
+            <div class="eco">University</div>
+            <div class="eperiod">Graduated</div>
+            <div class="edesc">Foundations in algorithms, systems programming, machine learning, and software engineering.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="win" id="win-skills" style="left:220px;top:68px">
+    <div class="wbar" data-win="skills">
+      <div class="tls">
+        <div class="tl r" onclick="closeW('skills')"></div>
+        <div class="tl y"></div><div class="tl g"></div>
+      </div>
+      <div class="wtitle">Skills</div>
+    </div>
+    <div class="wbody">
+      <div class="sbody">
+        <div class="sgroup"><div class="sgl">Languages</div>
+          <div class="schips"><span class="sc">Python</span><span class="sc">JavaScript</span><span class="sc">TypeScript</span><span class="sc">C++</span><span class="sc">Rust</span><span class="sc">SQL</span></div>
+        </div>
+        <div class="sgroup"><div class="sgl">AI / ML</div>
+          <div class="schips"><span class="sc">PyTorch</span><span class="sc">TensorFlow</span><span class="sc">Scikit-learn</span><span class="sc">LangChain</span><span class="sc">Hugging Face</span><span class="sc">Claude API</span></div>
+        </div>
+        <div class="sgroup"><div class="sgl">Web & Frameworks</div>
+          <div class="schips"><span class="sc">React</span><span class="sc">Next.js</span><span class="sc">Node.js</span><span class="sc">FastAPI</span><span class="sc">PostgreSQL</span><span class="sc">MongoDB</span></div>
+        </div>
+        <div class="sgroup"><div class="sgl">Tools & Infrastructure</div>
+          <div class="schips"><span class="sc">Docker</span><span class="sc">Git</span><span class="sc">AWS</span><span class="sc">Linux</span><span class="sc">ROS</span><span class="sc">Figma</span></div>
+        </div>
+        <div class="sgroup"><div class="sgl">Domains</div>
+          <div class="schips"><span class="sc">Spacecraft Systems</span><span class="sc">Astrodynamics</span><span class="sc">Autonomous Agents</span><span class="sc">Computer Vision</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="win" id="win-resume" style="left:230px;top:70px;width:420px">
+    <div class="wbar" data-win="resume">
+      <div class="tls">
+        <div class="tl r" onclick="closeW('resume')"></div>
+        <div class="tl y"></div><div class="tl g"></div>
+      </div>
+      <div class="wtitle">Resume</div>
+    </div>
+    <div class="wbody">
+      <div class="rbody">
+        <div class="rprev">
+          <div class="rico">📄</div>
+          <p>Akshay_Revankar_Resume.pdf<br><span style="font-size:11px">AI Engineer · Spacecraft Systems · Full Stack</span></p>
+        </div>
+        <a class="rbtn" href="mailto:akshayrevankar60@gmail.com">Request Resume ✉</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="win" id="win-contact" style="left:245px;top:75px;width:420px">
+    <div class="wbar" data-win="contact">
+      <div class="tls">
+        <div class="tl r" onclick="closeW('contact')"></div>
+        <div class="tl y"></div><div class="tl g"></div>
+      </div>
+      <div class="wtitle">Contact Me</div>
+    </div>
+    <div class="wbody">
+      <div class="cbody">
+        <a class="crow" href="mailto:akshayrevankar60@gmail.com">
+          <span class="cico">✉️</span>
+          <div><div class="clbl">Email</div><div class="cval">akshayrevankar60@gmail.com</div></div>
+        </a>
+        <a class="crow" href="https://github.com" target="_blank">
+          <span class="cico">🐙</span>
+          <div><div class="clbl">GitHub</div><div class="cval">github.com/akshay-revankar</div></div>
+        </a>
+        <a class="crow" href="https://linkedin.com" target="_blank">
+          <span class="cico">💼</span>
+          <div><div class="clbl">LinkedIn</div><div class="cval">linkedin.com/in/akshay-revankar</div></div>
+        </a>
+        <div class="crow" style="cursor:default">
+          <span class="cico">📍</span>
+          <div><div class="clbl">Location</div><div class="cval">India · Open to Remote</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="win" id="win-terminal" style="left:200px;top:60px;width:530px">
+    <div class="wbar" data-win="terminal">
+      <div class="tls">
+        <div class="tl r" onclick="closeW('terminal')"></div>
+        <div class="tl y"></div><div class="tl g"></div>
+      </div>
+      <div class="wtitle">Terminal — akshay@spacecraft: ~</div>
+    </div>
+    <div class="wbody">
+      <div class="tbody">
+        <div class="tl2"><span class="tp">akshay@spacecraft</span><span class="td2">:~$ </span><span class="tc2">whoami</span></div>
+        <div class="tl2 to">Akshay Mohan Revankar — AI Engineer &amp; Spacecraft Systems Developer</div>
+        <div class="tl2">&nbsp;</div>
+        <div class="tl2"><span class="tp">akshay@spacecraft</span><span class="td2">:~$ </span><span class="tc2">cat mission.txt</span></div>
+        <div class="tl2 to">Building intelligent systems that operate where human oversight</div>
+        <div class="tl2 to">is impossible — autonomous, reliable, fast.</div>
+        <div class="tl2">&nbsp;</div>
+        <div class="tl2"><span class="tp">akshay@spacecraft</span><span class="td2">:~$ </span><span class="tc2">ls projects/</span></div>
+        <div class="tl2" style="color:#9b5de5">AEGIS/&nbsp;&nbsp; ORBITTRACE/&nbsp;&nbsp; SCIENCEPACK/&nbsp;&nbsp; DARKSIDE/</div>
+        <div class="tl2">&nbsp;</div>
+        <div class="tl2"><span class="tp">akshay@spacecraft</span><span class="td2">:~$ </span><span class="tc2">echo $STATUS</span></div>
+        <div class="tl2 to">🟢 open_to_work=true | building=spacecraft_ai | mode=mission_critical</div>
+        <div class="tl2">&nbsp;</div>
+        <div class="tl2"><span class="tp">akshay@spacecraft</span><span class="td2">:~$ </span><span class="tcursor"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STARFIELD ──
+const cvs = document.getElementById('bg-canvas');
+const cx = cvs.getContext('2d');
+let stars = [];
+
+function initStars() {
+  cvs.width = innerWidth; cvs.height = innerHeight;
+  stars = [];
+  const n = Math.floor(innerWidth * innerHeight / 5500);
+  for (let i = 0; i < n; i++)
+    stars.push({x:Math.random()*cvs.width,y:Math.random()*cvs.height,
+      r:Math.random()*1.3+.15,a:Math.random(),da:(Math.random()-.5)*.006});
+}
+
+function drawStars() {
+  cx.clearRect(0,0,cvs.width,cvs.height);
+  const g = cx.createRadialGradient(cvs.width*.35,cvs.height*.4,0,cvs.width*.5,cvs.height*.5,cvs.width*.9);
+  g.addColorStop(0,'#0e0b30'); g.addColorStop(.6,'#06061a'); g.addColorStop(1,'#020209');
+  cx.fillStyle = g; cx.fillRect(0,0,cvs.width,cvs.height);
+  const nb = cx.createRadialGradient(cvs.width*.72,cvs.height*.28,0,cvs.width*.72,cvs.height*.28,cvs.width*.32);
+  nb.addColorStop(0,'rgba(100,60,255,.09)'); nb.addColorStop(1,'transparent');
+  cx.fillStyle = nb; cx.fillRect(0,0,cvs.width,cvs.height);
+  for (const s of stars) {
+    s.a += s.da;
+    if (s.a>1||s.a<.08) s.da*=-1;
+    cx.beginPath(); cx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    cx.fillStyle = `rgba(255,255,255,${s.a.toFixed(2)})`; cx.fill();
+  }
+  requestAnimationFrame(drawStars);
+}
+addEventListener('resize',initStars);
+initStars(); drawStars();
+
+// ── CLOCK ──
+function tick() {
+  const d = new Date();
+  const h = d.getHours(), m = d.getMinutes();
+  const ampm = h>=12?'PM':'AM';
+  const h12 = String((h%12)||12).padStart(2,'0');
+  const mm = String(m).padStart(2,'0');
+  document.getElementById('w-clock').textContent = `${h12}:${mm}`;
+  document.getElementById('menu-clock').textContent = `${h12}:${mm} ${ampm}`;
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const mos=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('w-date').textContent = `${days[d.getDay()]}, ${mos[d.getMonth()]} ${d.getDate()}`;
+}
+tick(); setInterval(tick,1000);
+
+// ── INTRO → DESKTOP ──
+let ztop = 200;
+setTimeout(() => {
+  const intro = document.getElementById('intro');
+  const desk = document.getElementById('desktop');
+  intro.classList.add('out');
+  desk.classList.add('vis');
+  setTimeout(() => { intro.style.display='none'; openW('about','About Me'); }, 700);
+}, 5400);
+
+// ── WINDOWS ──
+function openW(id, name) {
+  const w = document.getElementById('win-'+id);
+  if (!w) return;
+  w.classList.add('open');
+  w.style.display = 'block';
+  bringFront(w);
+  document.getElementById('app-name').textContent = name;
+  const dk = document.getElementById('dk-'+id);
+  if (dk) dk.classList.add('open');
+}
+
+function closeW(id) {
+  const w = document.getElementById('win-'+id);
+  if (!w) return;
+  w.style.transition = 'opacity .15s,transform .15s';
+  w.style.opacity = '0'; w.style.transform = 'scale(.95)';
+  setTimeout(() => {
+    w.style.display = 'none'; w.classList.remove('open');
+    w.style.opacity = ''; w.style.transform = ''; w.style.transition = '';
+    const dk = document.getElementById('dk-'+id);
+    if (dk) dk.classList.remove('open');
+  }, 150);
+  document.getElementById('app-name').textContent = 'Finder';
+}
+
+function bringFront(el) { ztop++; el.style.zIndex = ztop; }
+
+document.querySelectorAll('.win').forEach(w =>
+  w.addEventListener('mousedown', () => bringFront(w)));
+
+// ── DRAG ──
+let drag=false, dragEl=null, ox=0, oy=0;
+document.addEventListener('mousedown', e => {
+  const bar = e.target.closest('.wbar');
+  if (!bar || e.target.classList.contains('tl')) return;
+  drag=true; dragEl=bar.closest('.win');
+  bringFront(dragEl);
+  const r = dragEl.getBoundingClientRect();
+  ox=e.clientX-r.left; oy=e.clientY-r.top;
+  e.preventDefault();
+});
+document.addEventListener('mousemove', e => {
+  if (!drag||!dragEl) return;
+  const x = Math.max(0, Math.min(e.clientX-ox, innerWidth-dragEl.offsetWidth));
+  const y = Math.max(28, Math.min(e.clientY-oy, innerHeight-dragEl.offsetHeight));
+  dragEl.style.left=x+'px'; dragEl.style.top=y+'px';
+});
+document.addEventListener('mouseup', () => { drag=false; dragEl=null; });
+</script>
