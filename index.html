@@ -1,3 +1,5 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Akshay Revankar</title>
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -25,6 +27,34 @@ body{background:var(--bg);color:var(--text);
 #desktop{position:fixed;inset:0;opacity:0;transition:opacity .9s ease}
 #desktop.vis{opacity:1}
 #bg-canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* ── MASCOT ── */
+#mascot{position:fixed;z-index:750;cursor:pointer;width:54px;height:54px;left:0;will-change:transform}
+#cat-flip{width:54px;height:54px;transition:transform .25s ease}
+#cat-flip.left{transform:scaleX(-1)}
+#mascot-bubble{position:absolute;bottom:calc(100% + 10px);left:50%;
+  transform:translateX(-50%) translateY(6px);width:max-content;max-width:230px;
+  background:rgba(255,248,230,.97);border:2px solid #f59e0b;
+  border-radius:14px;padding:8px 13px;font-size:11.5px;font-weight:500;
+  color:#7c2d12;white-space:pre-line;text-align:center;line-height:1.5;
+  opacity:0;transition:opacity .35s,transform .35s;pointer-events:none;
+  box-shadow:0 4px 18px rgba(0,0,0,.25)}
+#mascot-bubble.show{transform:translateX(-50%) translateY(0)}
+.paw-a,.paw-b{transform-box:fill-box;transform-origin:center}
+#mascot.walk .paw-a{animation:pawStep .35s ease-in-out infinite alternate}
+#mascot.walk .paw-b{animation:pawStep .35s ease-in-out infinite alternate-reverse}
+@keyframes pawStep{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+#mascot-bubble::after{content:'';position:absolute;bottom:-9px;left:50%;
+  transform:translateX(-50%);width:0;height:0;
+  border-left:7px solid transparent;border-right:7px solid transparent;
+  border-top:9px solid #f59e0b}
+#mascot-bubble.show{opacity:1}
+/* cat SVG shell */
+#cat-svg{width:54px;height:54px;filter:drop-shadow(0 3px 8px rgba(0,0,0,.35))}
+#mascot.walk #cat-svg{animation:catBob .35s ease-in-out infinite alternate}
+#mascot.idle #cat-svg{animation:catSit .8s ease-in-out infinite alternate}
+@keyframes catBob{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+@keyframes catSit{from{transform:rotate(-2deg)}to{transform:rotate(2deg)}}
 
 /* ── MENU BAR ── */
 #menubar{position:fixed;top:0;left:0;right:0;height:28px;
@@ -297,6 +327,45 @@ body{background:var(--bg);color:var(--text);
 <!-- ── DESKTOP ── -->
 <div id="desktop">
   <canvas id="bg-canvas"></canvas>
+
+  <div id="mascot" onclick="openW('about','About Me')">
+    <div id="mascot-bubble"></div>
+    <div id="cat-flip">
+    <svg id="cat-svg" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
+      <!-- tail -->
+      <path d="M38 44 Q52 36 50 26 Q48 18 42 22" fill="none" stroke="#e8813a" stroke-width="4" stroke-linecap="round"/>
+      <!-- body -->
+      <ellipse cx="27" cy="40" rx="16" ry="12" fill="#f4a460"/>
+      <ellipse cx="27" cy="40" rx="10" ry="8" fill="#fde8d0"/>
+      <!-- head -->
+      <circle cx="27" cy="22" r="13" fill="#f4a460"/>
+      <!-- ears -->
+      <polygon points="16,12 12,2 22,10" fill="#f4a460"/>
+      <polygon points="38,12 42,2 32,10" fill="#f4a460"/>
+      <polygon points="17,11 14,5 22,10" fill="#ffb6c1" opacity=".7"/>
+      <polygon points="37,11 40,5 32,10" fill="#ffb6c1" opacity=".7"/>
+      <!-- face markings -->
+      <circle cx="27" cy="23" r="8" fill="#fde8d0"/>
+      <!-- eyes -->
+      <ellipse cx="22" cy="20" rx="3" ry="3.5" fill="#1a1a1a"/>
+      <ellipse cx="32" cy="20" rx="3" ry="3.5" fill="#1a1a1a"/>
+      <circle cx="23" cy="19" r="1" fill="#fff"/>
+      <circle cx="33" cy="19" r="1" fill="#fff"/>
+      <!-- nose -->
+      <ellipse cx="27" cy="25" rx="2" ry="1.5" fill="#e8813a"/>
+      <!-- mouth -->
+      <path d="M24 27 Q27 30 30 27" fill="none" stroke="#c0643a" stroke-width="1.2" stroke-linecap="round"/>
+      <!-- whiskers -->
+      <line x1="14" y1="24" x2="23" y2="25" stroke="#888" stroke-width=".8" opacity=".7"/>
+      <line x1="14" y1="26" x2="23" y2="26" stroke="#888" stroke-width=".8" opacity=".7"/>
+      <line x1="40" y1="24" x2="31" y2="25" stroke="#888" stroke-width=".8" opacity=".7"/>
+      <line x1="40" y1="26" x2="31" y2="26" stroke="#888" stroke-width=".8" opacity=".7"/>
+      <!-- paws -->
+      <ellipse class="paw-a" cx="18" cy="50" rx="5" ry="3.5" fill="#e8813a"/>
+      <ellipse class="paw-b" cx="36" cy="50" rx="5" ry="3.5" fill="#e8813a"/>
+    </svg>
+    </div>
+  </div>
 
   <div id="menubar">
     <div class="ml">
@@ -693,23 +762,185 @@ body{background:var(--bg);color:var(--text);
 </div>
 
 <script>
-// ── STARFIELD ──
-const cvs=document.getElementById('bg-canvas'),cx=cvs.getContext('2d');let stars=[];
-function initStars(){cvs.width=innerWidth;cvs.height=innerHeight;stars=[];
-  for(let i=0;i<Math.floor(innerWidth*innerHeight/6000);i++)
-    stars.push({x:Math.random()*cvs.width,y:Math.random()*cvs.height,r:Math.random()*1.1+.1,a:Math.random(),da:(Math.random()-.5)*.005})}
-function drawStars(){cx.clearRect(0,0,cvs.width,cvs.height);
-  const g=cx.createRadialGradient(cvs.width*.3,cvs.height*.35,0,cvs.width*.5,cvs.height*.5,cvs.width*.95);
-  g.addColorStop(0,'#080f20');g.addColorStop(.7,'#040a16');g.addColorStop(1,'#020608');
-  cx.fillStyle=g;cx.fillRect(0,0,cvs.width,cvs.height);
-  const nb=cx.createRadialGradient(cvs.width*.75,cvs.height*.25,0,cvs.width*.75,cvs.height*.25,cvs.width*.28);
-  nb.addColorStop(0,'rgba(30,80,220,.07)');nb.addColorStop(1,'transparent');
-  cx.fillStyle=nb;cx.fillRect(0,0,cvs.width,cvs.height);
-  for(const s of stars){s.a+=s.da;if(s.a>1||s.a<.06)s.da*=-1;
-    cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    cx.fillStyle=`rgba(200,220,255,${s.a.toFixed(2)})`;cx.fill()}
-  requestAnimationFrame(drawStars)}
-addEventListener('resize',initStars);initStars();drawStars();
+// ── BEACH BACKGROUND ──
+const cvs=document.getElementById('bg-canvas'),cx=cvs.getContext('2d');
+let t=0;
+const clouds=[
+  {x:0.1,y:0.12,w:180,h:55,speed:.00006},
+  {x:0.45,y:0.07,w:230,h:60,speed:.00004},
+  {x:0.75,y:0.15,w:160,h:45,speed:.00007},
+];
+const birds=Array.from({length:5},(_,i)=>({
+  x:Math.random(),y:.08+Math.random()*.12,
+  phase:Math.random()*Math.PI*2,speed:.00003+Math.random()*.00003}));
+
+function drawCloud(x,y,w,h){
+  cx.save();cx.globalAlpha=.75;
+  const g=cx.createRadialGradient(x,y,0,x,y,w*.6);
+  g.addColorStop(0,'rgba(255,240,210,.95)');g.addColorStop(1,'rgba(255,200,150,0)');
+  cx.fillStyle=g;
+  cx.beginPath();cx.ellipse(x,y,w*.5,h*.5,0,0,Math.PI*2);cx.fill();
+  cx.beginPath();cx.ellipse(x-w*.2,y+h*.1,w*.32,h*.38,0,0,Math.PI*2);cx.fill();
+  cx.beginPath();cx.ellipse(x+w*.22,y+h*.08,w*.28,h*.35,0,0,Math.PI*2);cx.fill();
+  cx.restore()}
+
+function drawBird(x,y,flap){
+  cx.save();cx.strokeStyle='rgba(80,40,10,.55)';cx.lineWidth=1.5;cx.lineCap='round';
+  cx.beginPath();
+  cx.moveTo(x-8,y);cx.quadraticCurveTo(x-4,y-4*Math.sin(flap),x,y);
+  cx.moveTo(x,y);cx.quadraticCurveTo(x+4,y-4*Math.sin(flap),x+8,y);
+  cx.stroke();cx.restore()}
+
+function drawBeach(){
+  const W=innerWidth,H=innerHeight;
+
+  // ── SKY ──
+  const skyH=H*.68;
+  const sky=cx.createLinearGradient(0,0,0,skyH);
+  sky.addColorStop(0,'#1a2a5e');
+  sky.addColorStop(.35,'#4a6fa5');
+  sky.addColorStop(.65,'#f4a460');
+  sky.addColorStop(.82,'#ff8c42');
+  sky.addColorStop(1,'#ffcb77');
+  cx.fillStyle=sky;cx.fillRect(0,0,W,skyH);
+
+  // ── SUN ──
+  const sunX=W*.72,sunY=H*.42;
+  const sunG=cx.createRadialGradient(sunX,sunY,0,sunX,sunY,90);
+  sunG.addColorStop(0,'rgba(255,240,120,1)');
+  sunG.addColorStop(.3,'rgba(255,190,60,.9)');
+  sunG.addColorStop(.7,'rgba(255,140,30,.3)');
+  sunG.addColorStop(1,'rgba(255,120,20,0)');
+  cx.fillStyle=sunG;cx.beginPath();cx.arc(sunX,sunY,90,0,Math.PI*2);cx.fill();
+  // inner sun
+  cx.fillStyle='rgba(255,250,180,.95)';cx.beginPath();cx.arc(sunX,sunY,28,0,Math.PI*2);cx.fill();
+
+  // ── SUN REFLECTION on water ──
+  const refG=cx.createLinearGradient(sunX-60,skyH,sunX+60,H*.82);
+  refG.addColorStop(0,'rgba(255,180,60,.45)');
+  refG.addColorStop(1,'rgba(255,140,30,0)');
+  cx.fillStyle=refG;
+  cx.beginPath();cx.moveTo(sunX-22,skyH);cx.lineTo(sunX+22,skyH);
+  cx.lineTo(sunX+70,H*.82);cx.lineTo(sunX-70,H*.82);cx.closePath();cx.fill();
+
+  // ── CLOUDS ──
+  clouds.forEach(c=>{
+    c.x=(c.x+c.speed)%1.3;
+    drawCloud(c.x*W,c.y*H,c.w,c.h)});
+
+  // ── BIRDS ──
+  birds.forEach(b=>{
+    b.x=(b.x+b.speed)%1.15;b.phase+=.08;
+    drawBird(b.x*W,b.y*H,b.phase)});
+
+  // ── OCEAN (3 wave layers) ──
+  const oceanTop=H*.66;
+  // deep water
+  const oceG=cx.createLinearGradient(0,oceanTop,0,H*.82);
+  oceG.addColorStop(0,'#1b6ca8');oceG.addColorStop(.5,'#1a5a96');oceG.addColorStop(1,'#0e3d6b');
+  cx.fillStyle=oceG;cx.fillRect(0,oceanTop,W,H*.82-oceanTop);
+
+  // wave layer 1 - back
+  const w1=cx.createLinearGradient(0,oceanTop,0,oceanTop+30);
+  w1.addColorStop(0,'rgba(100,200,240,.55)');w1.addColorStop(1,'rgba(30,120,200,.0)');
+  cx.fillStyle=w1;cx.beginPath();cx.moveTo(0,oceanTop+8);
+  for(let x=0;x<=W;x+=4){const y=oceanTop+Math.sin((x*.012)+t*.9)*7+8;cx.lineTo(x,y)}
+  cx.lineTo(W,oceanTop+30);cx.lineTo(0,oceanTop+30);cx.closePath();cx.fill();
+
+  // wave layer 2 - mid
+  const w2=cx.createLinearGradient(0,H*.73,0,H*.77);
+  w2.addColorStop(0,'rgba(140,220,255,.7)');w2.addColorStop(1,'rgba(40,130,210,0)');
+  cx.fillStyle=w2;cx.beginPath();cx.moveTo(0,H*.73);
+  for(let x=0;x<=W;x+=4){const y=H*.73+Math.sin((x*.008)+t*1.1+1)*9;cx.lineTo(x,y)}
+  cx.lineTo(W,H*.77);cx.lineTo(0,H*.77);cx.closePath();cx.fill();
+
+  // foam crests
+  cx.strokeStyle='rgba(255,255,255,.35)';cx.lineWidth=2;cx.lineCap='round';
+  cx.beginPath();
+  for(let x=0;x<=W;x+=4){const y=H*.73+Math.sin((x*.008)+t*1.1+1)*9;x?cx.lineTo(x,y):cx.moveTo(x,y)}
+  cx.stroke();
+
+  // wave layer 3 - shore
+  const w3=cx.createLinearGradient(0,H*.80,0,H*.85);
+  w3.addColorStop(0,'rgba(200,240,255,.8)');w3.addColorStop(1,'rgba(180,230,250,0)');
+  cx.fillStyle=w3;cx.beginPath();cx.moveTo(0,H*.80);
+  for(let x=0;x<=W;x+=4){const y=H*.80+Math.sin((x*.007)+t*1.4+2)*6;cx.lineTo(x,y)}
+  cx.lineTo(W,H*.85);cx.lineTo(0,H*.85);cx.closePath();cx.fill();
+
+  // ── SAND ──
+  const sandG=cx.createLinearGradient(0,H*.82,0,H);
+  sandG.addColorStop(0,'#f5deb3');sandG.addColorStop(.4,'#f0c882');sandG.addColorStop(1,'#d4a853');
+  cx.fillStyle=sandG;cx.fillRect(0,H*.82,W,H);
+
+  // wet sand shimmer
+  const wetG=cx.createLinearGradient(0,H*.82,0,H*.87);
+  wetG.addColorStop(0,'rgba(180,220,240,.35)');wetG.addColorStop(1,'rgba(180,220,240,0)');
+  cx.fillStyle=wetG;cx.fillRect(0,H*.82,W,H*.87-H*.82);
+
+  // sand ripples
+  cx.strokeStyle='rgba(180,130,60,.18)';cx.lineWidth=1;
+  for(let i=0;i<6;i++){
+    const ry=H*.84+i*18;
+    cx.beginPath();cx.moveTo(0,ry);
+    for(let x=0;x<=W;x+=8)cx.lineTo(x,ry+Math.sin(x*.03+i)*2.5);
+    cx.stroke()}
+
+  // sand specks
+  for(let i=0;i<120;i++){
+    const sx=(Math.sin(i*137.5)*0.5+0.5)*W;
+    const sy=H*.83+(Math.cos(i*91.3)*0.5+0.5)*(H*.16);
+    cx.fillStyle=`rgba(160,100,40,${(Math.sin(i)*.15+.1).toFixed(2)})`;
+    cx.beginPath();cx.arc(sx,sy,.8,0,Math.PI*2);cx.fill()}
+
+  t+=.022;
+  requestAnimationFrame(drawBeach)}
+
+function sizeCanvas(){
+  const dpr=Math.min(devicePixelRatio||1,2);
+  cvs.width=innerWidth*dpr;cvs.height=innerHeight*dpr;
+  cx.setTransform(dpr,0,0,dpr,0,0);
+  document.getElementById('mascot').style.top=(innerHeight*.87-54)+'px'}
+addEventListener('resize',sizeCanvas);
+sizeCanvas();drawBeach();
+
+// ── CAT MASCOT ──
+const mascot=document.getElementById('mascot');
+const bubble=document.getElementById('mascot-bubble');
+const quips=[
+  "Hire my human 🐱\nHe unlocks legendary skills.",
+  "meow = ['Python','PyTorch','AWS']\nHire him to unlock the rest 🔓",
+  "He wrote 20+ APIs.\nI knocked 0 off the table. Hire him. 🐾",
+  "His uptime: 99.5%.\nMy nap uptime: 100%.\nBoth impressive. Hire him. 😼",
+  "Full potential:\n🔒 LOCKED\nUnlock it → hire Akshay",
+  "He trained neural nets.\nAND me.\nBoth feats deserve a job offer. 😺",
+  "I've seen his code.\nCleaner than my fur.\nHire him.",
+  "He processes 83k CVEs.\nI process 83k naps.\nHe's more useful. Hire him 🐟",
+  "if (!hired) {\n  I sit on your keyboard.\n} // fair warning 😾",
+  "Recruit him before I eat\nyour ethernet cable. 🙀",
+];
+
+const catFlip=document.getElementById('cat-flip');
+let mX=Math.min(260,innerWidth/2),mDir=1,mState='walk',mTimer=0,mSpeed=1.2,quipIdx=0;
+
+function moveMascot(){
+  if(mState==='walk'){
+    mX+=mDir*mSpeed;
+    const minX=130,maxX=Math.max(minX,innerWidth-185);
+    if(mX>=maxX){mX=maxX;mDir=-1;catFlip.classList.add('left')}
+    if(mX<=minX){mX=minX;mDir=1;catFlip.classList.remove('left')}
+    mascot.style.transform=`translateX(${mX.toFixed(1)}px)`;
+    mTimer++;
+    if(mTimer>200+Math.random()*260){
+      mState='idle';mTimer=0;
+      mascot.classList.remove('walk');mascot.classList.add('idle');
+      bubble.textContent=quips[quipIdx%quips.length];quipIdx++;
+      bubble.classList.add('show');
+      setTimeout(()=>bubble.classList.remove('show'),3800)}}
+  else{mTimer++;if(mTimer>110){mState='walk';mTimer=0;
+    mascot.classList.remove('idle');mascot.classList.add('walk')}}
+  requestAnimationFrame(moveMascot)}
+
+mascot.style.transform=`translateX(${mX}px)`;mascot.classList.add('walk');moveMascot();
 
 // ── CLOCK ──
 function tick(){const d=new Date(),h=d.getHours(),m=d.getMinutes();
